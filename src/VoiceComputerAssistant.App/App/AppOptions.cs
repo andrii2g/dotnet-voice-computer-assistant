@@ -24,10 +24,8 @@ public sealed record AppOptions(
             ViewportWidth,
             ViewportHeight);
 
-    public static AppOptions FromEnvironment(CliArgs cliArgs)
+    public static AppOptions FromConfiguration(IConfiguration config, CliArgs cliArgs)
     {
-        var repoRoot = RepoPaths.FindRepoRoot();
-        var config = BuildConfiguration(repoRoot);
         var prompt = cliArgs.Prompt;
         var apiKey = config["OpenAI:ApiKey"] ?? config["OPENAI_API_KEY"] ?? string.Empty;
         var model = config["OpenAI:Model"] ?? config["OPENAI_MODEL"] ?? "computer-use-preview";
@@ -55,18 +53,6 @@ public sealed record AppOptions(
             maxTurns,
             viewportWidth,
             viewportHeight);
-    }
-
-    private static IConfigurationRoot BuildConfiguration(string repoRoot)
-    {
-        var appProjectDirectory = Path.Combine(repoRoot, "src", "VoiceComputerAssistant.App");
-
-        return new ConfigurationBuilder()
-            .SetBasePath(appProjectDirectory)
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-            .AddUserSecrets(typeof(AppOptions).Assembly, optional: true)
-            .AddEnvironmentVariables()
-            .Build();
     }
 
     private static int? ReadInt(IConfiguration config, string key, string? fallbackKey = null)

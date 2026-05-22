@@ -23,6 +23,7 @@ public sealed class ResponsesApiClient
         var payload = new
         {
             model = _options.Model,
+            truncation = "auto",
             tools = new[]
             {
                 CreateComputerTool()
@@ -44,6 +45,7 @@ public sealed class ResponsesApiClient
         var payload = new
         {
             model = _options.Model,
+            truncation = "auto",
             tools = new[]
             {
                 CreateComputerTool()

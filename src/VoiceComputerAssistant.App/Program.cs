@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using VoiceComputerAssistant.App.Agent;
 using VoiceComputerAssistant.App.App;
 using VoiceComputerAssistant.App.Browser;
@@ -24,7 +25,15 @@ try
         return 0;
     }
 
-    var options = AppOptions.FromEnvironment(cliArgs);
+    var repoRoot = RepoPaths.FindRepoRoot();
+    var appProjectDirectory = Path.Combine(repoRoot, "src", "VoiceComputerAssistant.App");
+    var configuration = new ConfigurationManager();
+    configuration.SetBasePath(appProjectDirectory);
+    configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+    configuration.AddUserSecrets<Program>(optional: true);
+    configuration.AddEnvironmentVariables();
+
+    var options = AppOptions.FromConfiguration(configuration, cliArgs);
 
     if (string.IsNullOrWhiteSpace(options.OpenAiApiKey))
     {
@@ -47,7 +56,6 @@ try
     }
 
     var validation = PromptValidator.Validate(prompt);
-    var repoRoot = RepoPaths.FindRepoRoot();
     var artifacts = RunArtifactStore.Create(repoRoot, options.SaveScreenshots);
     await artifacts.SaveValidationAsync(
         JsonSerializer.Serialize(validation, new JsonSerializerOptions { WriteIndented = true }),

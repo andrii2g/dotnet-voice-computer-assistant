@@ -59,7 +59,7 @@ pwsh .\src\VoiceComputerAssistant.App\bin\Debug\net10.0\playwright.ps1 install -
 The app reads configuration in this order:
 
 1. `src/VoiceComputerAssistant.App/appsettings.json`
-2. .NET user secrets
+2. .NET user secrets via `AddUserSecrets<Program>()`
 3. environment variables
 4. CLI overrides such as `--port`, `--max-turns`, and `--headless`
 
@@ -99,7 +99,7 @@ $env:DEMO_SAVE_SCREENSHOTS="true"
 $env:DEMO_MAX_TURNS="20"
 ```
 
-See [.env.example](C:/github/a2g.name/dotnet-voice-computer-assistant/.env.example) and [appsettings.json](C:/github/a2g.name/dotnet-voice-computer-assistant/src/VoiceComputerAssistant.App/appsettings.json) for the full configuration shape.
+See [.env.example](src/VoiceComputerAssistant.App/appsettings.json) for the full configuration shape.
 
 ## Run
 
