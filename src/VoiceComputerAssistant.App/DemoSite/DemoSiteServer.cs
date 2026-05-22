@@ -48,7 +48,7 @@ public sealed class DemoSiteServer : IAsyncDisposable
             FileProvider = fileProvider
         });
 
-        app.MapGet("/health", () => Results.Text("ok", "text/plain"));
+        app.MapGet("/health", () => "ok");
 
         try
         {

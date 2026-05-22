@@ -67,6 +67,14 @@ public static partial class PromptValidator
 
         var normalizedPrompt = sanitizedPrompt.ToLowerInvariant();
 
+        if (ReferencesGitHubAutomation(normalizedPrompt))
+        {
+            return new PromptValidationResult(
+                PromptRiskLevel.Blocked,
+                "Prompt contains blocked GitHub automation.",
+                sanitizedPrompt);
+        }
+
         var blockedMatch = FindFirstMatch(normalizedPrompt, BlockedIndicators);
         if (blockedMatch is not null)
         {
@@ -115,6 +123,13 @@ public static partial class PromptValidator
 
         return null;
     }
+
+    private static bool ReferencesGitHubAutomation(string prompt) =>
+        prompt.Contains("github", StringComparison.Ordinal) &&
+        (prompt.Contains("push", StringComparison.Ordinal) ||
+         prompt.Contains("commit", StringComparison.Ordinal) ||
+         prompt.Contains("login", StringComparison.Ordinal) ||
+         prompt.Contains("log in", StringComparison.Ordinal));
 
     [GeneratedRegex(@"\s+")]
     private static partial Regex WhitespaceRegex();
