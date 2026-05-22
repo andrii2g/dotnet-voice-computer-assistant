@@ -5,6 +5,7 @@ obj/
 artifacts/
 .env
 .dotnet-home/
+.nuget-packages/
 *.user
 *.suo
 TestResults/
