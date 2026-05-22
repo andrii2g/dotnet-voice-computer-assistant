@@ -1,4 +1,5 @@
 using System.Globalization;
+using VoiceComputerAssistant.App.OpenAI;
 
 namespace VoiceComputerAssistant.App.App;
 
@@ -14,6 +15,14 @@ public sealed record AppOptions(
     int ViewportWidth,
     int ViewportHeight)
 {
+    public ResponsesApiOptions ResponsesApiOptions =>
+        ResponsesApiOptions.CreateDefault(
+            OpenAiApiKey,
+            OpenAiModel,
+            OpenAiBaseUrl,
+            ViewportWidth,
+            ViewportHeight);
+
     public static AppOptions FromEnvironment(CliArgs cliArgs)
     {
         var prompt = cliArgs.Prompt;

@@ -84,8 +84,16 @@ public sealed class ResponsesApiClient
         return ParseResponse(rawJson);
     }
 
-    private Uri BuildResponsesEndpoint() =>
-        new(_options.BaseUrl, "responses");
+    private Uri BuildResponsesEndpoint()
+    {
+        var baseUrl = _options.BaseUrl.ToString();
+        if (!baseUrl.EndsWith("/", StringComparison.Ordinal))
+        {
+            baseUrl += "/";
+        }
+
+        return new Uri(new Uri(baseUrl, UriKind.Absolute), "responses");
+    }
 
     private object CreateComputerTool() =>
         new
