@@ -54,7 +54,33 @@ Linux users who need extra browser dependencies may need:
 pwsh .\src\VoiceComputerAssistant.App\bin\Debug\net10.0\playwright.ps1 install --with-deps chromium
 ```
 
-## Environment Variables
+## Configuration
+
+The app reads configuration in this order:
+
+1. `src/VoiceComputerAssistant.App/appsettings.json`
+2. .NET user secrets
+3. environment variables
+4. CLI overrides such as `--port`, `--max-turns`, and `--headless`
+
+`appsettings.json` is intended for safe defaults already checked into the repo. Secrets should go into user secrets or environment variables, not the repo.
+
+### User Secrets
+
+Initialize the secret values locally:
+
+```powershell
+dotnet user-secrets set "OpenAI:ApiKey" "sk-..." --project .\src\VoiceComputerAssistant.App
+dotnet user-secrets set "OpenAI:Model" "computer-use-preview" --project .\src\VoiceComputerAssistant.App
+```
+
+You can inspect the local secret store with:
+
+```powershell
+dotnet user-secrets list --project .\src\VoiceComputerAssistant.App
+```
+
+### Environment Variables
 
 PowerShell:
 
@@ -73,7 +99,7 @@ $env:DEMO_SAVE_SCREENSHOTS="true"
 $env:DEMO_MAX_TURNS="20"
 ```
 
-See [.env.example](C:/github/a2g.name/dotnet-voice-computer-assistant/.env.example) for the full list.
+See [.env.example](C:/github/a2g.name/dotnet-voice-computer-assistant/.env.example) and [appsettings.json](C:/github/a2g.name/dotnet-voice-computer-assistant/src/VoiceComputerAssistant.App/appsettings.json) for the full configuration shape.
 
 ## Run
 

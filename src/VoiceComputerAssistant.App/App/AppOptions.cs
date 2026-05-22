@@ -1,4 +1,5 @@
 using System.Globalization;
+using Microsoft.Extensions.Configuration;
 using VoiceComputerAssistant.App.OpenAI;
 
 namespace VoiceComputerAssistant.App.App;
@@ -25,14 +26,23 @@ public sealed record AppOptions(
 
     public static AppOptions FromEnvironment(CliArgs cliArgs)
     {
+        var repoRoot = RepoPaths.FindRepoRoot();
+        var config = BuildConfiguration(repoRoot);
         var prompt = cliArgs.Prompt;
-        var apiKey = ReadString("OPENAI_API_KEY") ?? string.Empty;
-        var model = ReadString("OPENAI_MODEL") ?? "computer-use-preview";
-        var baseUrl = new Uri(ReadString("OPENAI_BASE_URL") ?? "https://api.openai.com/v1", UriKind.Absolute);
-        var port = cliArgs.Port ?? ReadInt("DEMO_SITE_PORT") ?? 5050;
-        var headless = cliArgs.Headless || ReadBool("DEMO_BROWSER_HEADLESS") == true;
-        var saveScreenshots = !cliArgs.NoScreenshots && ReadBool("DEMO_SAVE_SCREENSHOTS") != false;
-        var maxTurns = cliArgs.MaxTurns ?? ReadInt("DEMO_MAX_TURNS") ?? 20;
+        var apiKey = config["OpenAI:ApiKey"] ?? config["OPENAI_API_KEY"] ?? string.Empty;
+        var model = config["OpenAI:Model"] ?? config["OPENAI_MODEL"] ?? "computer-use-preview";
+        var baseUrl = new Uri(
+            config["OpenAI:BaseUrl"] ??
+            config["OPENAI_BASE_URL"] ??
+            "https://api.openai.com/v1",
+            UriKind.Absolute);
+        var port = cliArgs.Port ?? ReadInt(config, "Demo:SitePort", "DEMO_SITE_PORT") ?? 5050;
+        var headless = cliArgs.Headless || ReadBool(config, "Demo:BrowserHeadless", "DEMO_BROWSER_HEADLESS") == true;
+        var saveScreenshots = !cliArgs.NoScreenshots &&
+            ReadBool(config, "Demo:SaveScreenshots", "DEMO_SAVE_SCREENSHOTS") != false;
+        var maxTurns = cliArgs.MaxTurns ?? ReadInt(config, "Demo:MaxTurns", "DEMO_MAX_TURNS") ?? 20;
+        var viewportWidth = ReadInt(config, "Demo:ViewportWidth") ?? 1280;
+        var viewportHeight = ReadInt(config, "Demo:ViewportHeight") ?? 720;
 
         return new AppOptions(
             prompt,
@@ -43,16 +53,25 @@ public sealed record AppOptions(
             headless,
             saveScreenshots,
             maxTurns,
-            1280,
-            720);
+            viewportWidth,
+            viewportHeight);
     }
 
-    private static string? ReadString(string variableName) =>
-        Environment.GetEnvironmentVariable(variableName);
-
-    private static int? ReadInt(string variableName)
+    private static IConfigurationRoot BuildConfiguration(string repoRoot)
     {
-        var value = ReadString(variableName);
+        var appProjectDirectory = Path.Combine(repoRoot, "src", "VoiceComputerAssistant.App");
+
+        return new ConfigurationBuilder()
+            .SetBasePath(appProjectDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+            .AddUserSecrets(typeof(AppOptions).Assembly, optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+    }
+
+    private static int? ReadInt(IConfiguration config, string key, string? fallbackKey = null)
+    {
+        var value = config[key] ?? (fallbackKey is null ? null : config[fallbackKey]);
         if (string.IsNullOrWhiteSpace(value))
         {
             return null;
@@ -61,9 +80,9 @@ public sealed record AppOptions(
         return int.Parse(value, CultureInfo.InvariantCulture);
     }
 
-    private static bool? ReadBool(string variableName)
+    private static bool? ReadBool(IConfiguration config, string key, string? fallbackKey = null)
     {
-        var value = ReadString(variableName);
+        var value = config[key] ?? (fallbackKey is null ? null : config[fallbackKey]);
         if (string.IsNullOrWhiteSpace(value))
         {
             return null;
