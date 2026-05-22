@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+.vscode/
+artifacts/
+.env
+.dotnet-home/
+*.user
+*.suo
+TestResults/
+playwright-report/
