@@ -71,7 +71,7 @@ Initialize the secret values locally:
 
 ```powershell
 dotnet user-secrets set "OpenAI:ApiKey" "sk-..." --project .\src\VoiceComputerAssistant.App
-dotnet user-secrets set "OpenAI:Model" "computer-use-preview" --project .\src\VoiceComputerAssistant.App
+dotnet user-secrets set "OpenAI:Model" "gpt-5.5" --project .\src\VoiceComputerAssistant.App
 ```
 
 You can inspect the local secret store with:
@@ -86,7 +86,7 @@ PowerShell:
 
 ```powershell
 $env:OPENAI_API_KEY="sk-..."
-$env:OPENAI_MODEL="computer-use-preview"
+$env:OPENAI_MODEL="gpt-5.5"
 $env:OPENAI_BASE_URL="https://api.openai.com/v1"
 ```
 

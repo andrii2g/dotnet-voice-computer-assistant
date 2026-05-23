@@ -20,15 +20,13 @@ public sealed record AppOptions(
         ResponsesApiOptions.CreateDefault(
             OpenAiApiKey,
             OpenAiModel,
-            OpenAiBaseUrl,
-            ViewportWidth,
-            ViewportHeight);
+            OpenAiBaseUrl);
 
     public static AppOptions FromConfiguration(IConfiguration config, CliArgs cliArgs)
     {
         var prompt = cliArgs.Prompt;
         var apiKey = config["OpenAI:ApiKey"] ?? config["OPENAI_API_KEY"] ?? string.Empty;
-        var model = config["OpenAI:Model"] ?? config["OPENAI_MODEL"] ?? "computer-use-preview";
+        var model = config["OpenAI:Model"] ?? config["OPENAI_MODEL"] ?? "gpt-5.5";
         var baseUrl = new Uri(
             config["OpenAI:BaseUrl"] ??
             config["OPENAI_BASE_URL"] ??

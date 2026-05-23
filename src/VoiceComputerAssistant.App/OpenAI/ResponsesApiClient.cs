@@ -23,13 +23,26 @@ public sealed class ResponsesApiClient
         var payload = new
         {
             model = _options.Model,
-            truncation = "auto",
             tools = new[]
             {
                 CreateComputerTool()
             },
             instructions,
-            input = prompt
+            input = new object[]
+            {
+                new
+                {
+                    role = "user",
+                    content = new object[]
+                    {
+                        new
+                        {
+                            type = "input_text",
+                            text = prompt
+                        }
+                    }
+                }
+            }
         };
 
         return SendAsync(payload, cancellationToken);
@@ -39,13 +52,13 @@ public sealed class ResponsesApiClient
         string previousResponseId,
         string callId,
         string screenshotDataUrl,
+        string currentUrl,
         IReadOnlyList<object>? acknowledgedSafetyChecks,
         CancellationToken cancellationToken)
     {
         var payload = new
         {
             model = _options.Model,
-            truncation = "auto",
             tools = new[]
             {
                 CreateComputerTool()
@@ -61,8 +74,10 @@ public sealed class ResponsesApiClient
                     output = new
                     {
                         type = "computer_screenshot",
-                        image_url = screenshotDataUrl
-                    }
+                        image_url = screenshotDataUrl,
+                        detail = "original"
+                    },
+                    current_url = currentUrl
                 }
             }
         };
@@ -100,10 +115,7 @@ public sealed class ResponsesApiClient
     private object CreateComputerTool() =>
         new
         {
-            type = "computer_use_preview",
-            display_width = _options.DisplayWidth,
-            display_height = _options.DisplayHeight,
-            environment = _options.Environment
+            type = "computer"
         };
 
     private static ResponsesApiResponse ParseResponse(string rawJson)

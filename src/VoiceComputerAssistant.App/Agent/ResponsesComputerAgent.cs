@@ -92,6 +92,7 @@ public sealed class ResponsesComputerAgent
                 response.Id,
                 computerCall.CallId,
                 screenshotDataUrl,
+                browser.Page.Url,
                 Array.Empty<object>(),
                 cancellationToken);
         }

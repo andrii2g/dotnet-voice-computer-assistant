@@ -3,22 +3,14 @@ namespace VoiceComputerAssistant.App.OpenAI;
 public sealed record ResponsesApiOptions(
     string ApiKey,
     string Model,
-    Uri BaseUrl,
-    int DisplayWidth,
-    int DisplayHeight,
-    string Environment)
+    Uri BaseUrl)
 {
     public static ResponsesApiOptions CreateDefault(
         string apiKey,
         string model,
-        Uri baseUrl,
-        int displayWidth,
-        int displayHeight) =>
+        Uri baseUrl) =>
         new(
             apiKey,
             model,
-            baseUrl,
-            displayWidth,
-            displayHeight,
-            "browser");
+            baseUrl);
 }
