@@ -52,7 +52,6 @@ public sealed class ResponsesApiClient
         string previousResponseId,
         string callId,
         string screenshotDataUrl,
-        string currentUrl,
         IReadOnlyList<object>? acknowledgedSafetyChecks,
         CancellationToken cancellationToken)
     {
@@ -76,8 +75,7 @@ public sealed class ResponsesApiClient
                         type = "computer_screenshot",
                         image_url = screenshotDataUrl,
                         detail = "original"
-                    },
-                    current_url = currentUrl
+                    }
                 }
             }
         };
